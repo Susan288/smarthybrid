@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery and Street Light Status</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #000000;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .container {
+            margin: 40px auto;
+            max-width: 1200px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .box {
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            width: 45%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .box h2 {
+            font-size: 1.8rem;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .battery-container {
+            display: inline-block;
+            width: 250px;
+            height: 100px;
+            border: 2px solid #333333;
+            border-radius: 5px;
+            position: relative;
+            background-color: #f5f5f5;
+        }
+
+        .battery-tip {
+            position: absolute;
+            top: 35%;
+            right: -15px;
+            width: 10px;
+            height: 30%;
+            background-color: #333333;
+            border-radius: 2px;
+        }
+
+        .battery-level {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .percentage {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #555555;
+        }
+
+        .bulb {
+            font-size: 60px;
+            color: #b0b0b0;
+            transition: color 0.3s ease;
+        }
+
+        .bulb.on {
+            color: #ffd700;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #000000;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background-color: #444444;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #000000;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 300px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .clock-container {
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+            width: 45%;
+        }
+
+        .clock-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #333333;
+        }
+
+        .current-time {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #555555;
+        }
+
+        .value-box {
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333333;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Status of IoT Monitoring</h1>
+    </header>
+
+    <div class="container">
+        <div class="box">
+            <h2>Battery Status</h2>
+            <div class="battery-container">
+                <div class="battery-level" id="batteryLevel"></div>
+                <div class="battery-tip"></div>
+            </div>
+            <div class="percentage" id="batteryPercentage">0%</div>
+            <div class="value-box" id="batteryVoltage">Voltage: 12V</div>
+            <div class="value-box" id="batteryCurrent">Current: 3A</div>
+            <div class="value-box" id="batteryPower">Power: 36W</div>
+        </div>
+
+        <div class="box">
+            <h2>Street Light Status</h2>
+            <div id="bulbIcon" class="bulb">💡</div>
+            <button onclick="toggleLight()" id="lightButton">Turn On</button>
+            <div class="value-box" id="streetLightStatus">Light: Off</div>
+        </div>
+    <div class="container">
+        <div class="box">
+            <h2>PIR Status</h2>
+            <div id="pirIcon" class="sensor-icon">🚨</div>
+            <button onclick="togglePIR()" id="pirButton">Turn On</button>
+            <div class="value-box" id="pirStatus">PIR Sensor: OFF</div>
+        </div>
+        <div class="box">
+            <h2>LDR Status</h2>
+            <div id="ldrIcon" class="sensor-icon">🌞</div>
+            <button onclick="toggleLDR()" id="pirButton">Turn On</button>
+            <div class="value-box" id="ldrStatus">LDR Sensor: OFF</div>
+        </div>
+        <script>
+    let pirStatus = false;
+    let ldrStatus = 'DAY';
+
+    // Toggle PIR status
+    function togglePIR() {
+        pirStatus = !pirStatus;
+        document.getElementById('pirStatus').textContent = 'PIR Sensor: ' + (pirStatus ? 'ON' : 'OFF');
+        document.getElementById('pirIcon').textContent = pirStatus ? '🟢' : '🚨';
+    }
+
+    // Toggle LDR status
+    function toggleLDR() {
+        ldrStatus = (ldrStatus === 'DAY') ? 'NIGHT' : 'DAY';
+        document.getElementById('ldrStatus').textContent = 'LDR Status: ' + ldrStatus;
+        document.getElementById('ldrIcon').textContent = ldrStatus === 'DAY' ? '🌞' : '🌜';
+    }
+</script>
+   
+    <div class="container">
+        <div class="box">
+            <h2>Solar Status</h2>
+            <div class="graph-container">
+                <canvas id="solarGraph"></canvas>
+            </div>
+            <div class="value-box" id="solarVoltage">Voltage: 18V</div>
+            <div class="value-box" id="solarCurrent">Current: 3A</div>
+            <div class="value-box" id="solarPower">Power: 54W</div>
+        </div>
+
+        <div class="box">
+            <h2>Load Status</h2>
+            <div class="graph-container">
+                <canvas id="loadGraph"></canvas>
+            </div>
+            <div class="value-box" id="loadVoltage">Voltage: 12V</div>
+            <div class="value-box" id="loadCurrent">Current: 2.5A</div>
+            <div class="value-box" id="loadPower">Power: 30W</div>
+        </div>
+    
+
+    <div class="container">
+        <div class="box">
+            <h2>Wind Status</h2>
+            <div class="graph-container">
+                <canvas id="windGraph"></canvas>
+            </div>
+            <div class="value-box" id="windVoltage">Voltage: 15V</div>
+            <div class="value-box" id="windCurrent">Current: 2A</div>
+            <div class="value-box" id="windPower">Power: 30W</div>
+        </div>
+
+        <div class="box">
+            <h2>Battery Graphs</h2>
+            <div class="graph-container">
+                <canvas id="batteryGraph"></canvas>
+            </div>
+            <div class="value-box" id="batteryGraphVoltage">Voltage: 12V</div>
+            <div class="value-box" id="batteryGraphCurrent">Current: 3A</div>
+            <div class="value-box" id="batteryGraphPower">Power: 36W</div>
+        </div>
+    
+    <div class="container">
+        
+        <div class="clock" id="digital-clock"></div>
+            <div class="clock-icon">🕒</div>
+            <div class="current-time" id="currentTime">Loading...</div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 IoT Monitoring Solutions. All rights reserved.
+    </footer>
+
+    <script>
+        // Function to display the current time
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // Call once to set the time immediately
+
+        function updateBatteryStatus(level) {
+            const batteryLevel = document.getElementById('batteryLevel');
+            const batteryPercentage = document.getElementById('batteryPercentage');
+            const batteryVoltage = document.getElementById('batteryVoltage');
+            const batteryCurrent = document.getElementById('batteryCurrent');
+            const batteryPower = document.getElementById('batteryPower');
+
+            batteryLevel.style.width = level + '%';
+            batteryPercentage.textContent = level + '%';
+            batteryVoltage.textContent = 'Voltage: 12V';
+            batteryCurrent.textContent = 'Current: 3A';
+            batteryPower.textContent = 'Power: 36W';
+
+            if (level > 50) {
+                batteryLevel.style.backgroundColor = '#4caf50';
+            } else if (level > 20) {
+                batteryLevel.style.backgroundColor = '#ff9800';
+            } else {
+                batteryLevel.style.backgroundColor = '#f44336';
+            }
+        }
+
+        updateBatteryStatus(70);
+
+        navigator.getBattery().then(battery => {
+            function updateAllBatteryInfo() {
+                updateBatteryStatus(Math.floor(battery.level * 100));
+            }
+
+            updateAllBatteryInfo();
+            battery.addEventListener('levelchange', updateAllBatteryInfo);
+        });
+
+        let lightOn = false;
+
+        function toggleLight() {
+            const bulbIcon = document.getElementById('bulbIcon');
+            const lightButton = document.getElementById('lightButton');
+            const streetLightStatus = document.getElementById('streetLightStatus');
+
+            lightOn = !lightOn;
+            if (lightOn) {
+                bulbIcon.classList.add('on');
+                lightButton.textContent = 'Turn Off';
+                streetLightStatus.textContent = 'Light: On';
+            } else {
+                bulbIcon.classList.remove('on');
+                lightButton.textContent = 'Turn On';
+                streetLightStatus.textContent = 'Light: Off';
+            }
+        }
+
+        function createGraph(ctx, label, data) {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: 20 }, (_, i) => i + 1),
+                    datasets: [
+                        {
+                            label: 'Voltage (V)',
+                            data: data.voltage,
+                            borderColor: 'red',
+                            fill: false,
+                        },
+                        {
+                            label: 'Current (A)',
+                            data: data.current,
+                            borderColor: 'blue',
+                            fill: false,
+                        },
+                        {
+                            label: 'Power (W)',
+                            data: data.power,
+                            borderColor: 'green',
+                            fill: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: label,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Example data for each graph
+        const solarData = {
+            voltage: Array.from({ length: 20 }, () => Math.random() * 30),
+            current: Array.from({ length: 20 }, () => Math.random() * 5),
+            power: Array.from({ length: 20 }, () => Math.random() * 150),
+        };
+        const loadData = {
+            voltage: Array.from({ length: 20 }, () => Math.random() * 20),
+            current: Array.from({ length: 20 }, () => Math.random() * 3),
+            power: Array.from({ length: 20 }, () => Math.random() * 60),
+        };
+        const windData = {
+            voltage: Array.from({ length: 20 }, () => Math.random() * 20),
+            current: Array.from({ length: 20 }, () => Math.random() * 2),
+            power: Array.from({ length: 20 }, () => Math.random() * 40),
+        };
+        const batteryData = {
+            voltage: Array.from({ length: 20 }, () => Math.random() * 14 + 10),
+            current: Array.from({ length: 20 }, () => Math.random() * 4),
+            power: Array.from({ length: 20 }, () => Math.random() * 100),
+        };
+
+        const solarCtx = document.getElementById('solarGraph').getContext('2d');
+        createGraph(solarCtx, 'Solar Power Data', solarData);
+
+        const loadCtx = document.getElementById('loadGraph').getContext('2d');
+        createGraph(loadCtx, 'Load Power Data', loadData);
+
+        const windCtx = document.getElementById('windGraph').getContext('2d');
+        createGraph(windCtx, 'Wind Power Data', windData);
+
+        const batteryCtx = document.getElementById('batteryGraph').getContext('2d');
+        createGraph(batteryCtx, 'Battery Power Data', batteryData);
+    </script>
+</body>
+</html>

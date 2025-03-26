@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: #f1f8fd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .navbar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .navbar a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.2rem;
+            margin: 0 20px;
+            padding: 15px 30px;
+            border: 2px solid white;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .navbar a:hover {
+            background: white;
+            color: #000;
+        }
+        h2 {
+            margin-top: 80px;
+            font-size: 2.5rem;
+            color: #333;
+        }
+        .contact-info {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+        }
+        .contact-info p {
+            margin: 10px 0;
+        }
+        .contact-form {
+            margin-top: 40px;
+            width: 80%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .contact-form button {
+            padding: 10px 20px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .contact-form button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="cloud.html">Home</a>
+        <a href="About.html">About</a>
+        <a href="status.html">Status</a>
+        <a href="team.html">Meet Our Team</a>
+    </div>
+    <h2>Contact us</h2>
+    
+    <div class="contact-info">
+        <p>Phone: +1 234 567 890</p>
+        <p>Email: info@solawind.com</p>
+        <p>LinkedIn: <a href="https://www.linkedin.com" target="_blank">linkedin.com/in/solawind</a></p>
+    </div>
+    
+    <div class="contact-form">
+        <h3>Send Us Your Message</h3>
+        <form action="mailto:info@solawind.com" method="post" enctype="text/plain">
+            <input type="text" name="name" placeholder="Your Name" required><br>
+            <input type="email" name="email" placeholder="Your Email" required><br>
+            <textarea name="message" placeholder="Your Message" rows="4" required></textarea><br>
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+</body>
+</html>

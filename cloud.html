@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Title</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: url('solarmill.jpg'); /* Replace with your image file path */
+            font-family: 'Arial', sans-serif;
+            padding-top: 100px; /* Add padding to push the content below the navbar */
+        }
+        .navbar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7); /* Black background for navbar */
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .navbar a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.2rem;
+            margin: 0 20px;
+            padding: 15px 30px;
+            border: 2px solid white;
+            border-radius: 50px; /* Bubble effect */
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .navbar a:hover {
+            background: white;
+            color: #000;
+        }
+        h1 {
+            color: black;
+            font-size: 3rem; /* Reduced heading size */
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+            border: 5px solid black;
+            padding: 30px 60px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        .subtext {
+            color: black;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 400;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="About.html" target="_blank">About</a>
+        <a href="Contact.html" target="_blank">Contact Us</a>
+        <a href="status.html" target="_blank">Status</a>
+        <a href="team.html" target="_blank">Meet Our Team</a>
+        <a href="monitor.html" target="_blank">Monitor</a>
+    </div>
+    <h1>IoT Monitored Solar Wind Hybrid Street Lighting System</h1>
+
+    <div class="content-section">
+        <h2>Welcome to our project!</h2>
+       
+        <p class="subtext">Innovating for a sustainable future with renewable energy.</p>
+    </div>
+</body>
+</html>
+
