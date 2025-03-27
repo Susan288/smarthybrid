@@ -52,7 +52,7 @@
     });
 
     function fetchData() {
-      $.getJSON('data.json?t=' + new Date().getTime(), function(data) {
+      $.getJSON('https://clouai.in/sh/data.json?t=' + new Date().getTime(), function(data) {
         parameters.forEach(param => {
           const time = data.time;
           if (charts[param].data.labels.length > 50) {
