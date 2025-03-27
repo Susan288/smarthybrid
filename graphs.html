@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Sensor Data Graphs</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .chart-container {
+      width: 45%;
+      display: inline-block;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Real-Time Sensor Data Graphs</h2>
+  
+  <div id="charts"></div>
+
+  <script>
+    const parameters = ['v0', 'i0', 'p0', 'v1', 'i1', 'p1', 'v2', 'i2', 'p2'];
+    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9C27B0', '#FFC107', '#03A9F4', '#E91E63', '#00BCD4'];
+    const charts = {};
+
+    parameters.forEach((param, index) => {
+      const container = document.createElement('div');
+      container.className = 'chart-container';
+      container.innerHTML = `<canvas id="${param}Chart"></canvas>`;
+      document.getElementById('charts').appendChild(container);
+
+      const ctx = document.getElementById(`${param}Chart`).getContext('2d');
+      charts[param] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: param,
+            data: [],
+            borderColor: colors[index],
+            fill: false
+          }]
+        },
+        options: {
+          scales: {
+            x: { title: { display: true, text: 'Time (s)' } },
+            y: { title: { display: true, text: param } }
+          }
+        }
+      });
+    });
+
+    function fetchData() {
+      $.getJSON('data.json?t=' + new Date().getTime(), function(data) {
+        parameters.forEach(param => {
+          const time = data.time;
+          if (charts[param].data.labels.length > 50) {
+            charts[param].data.labels.shift();
+            charts[param].data.datasets[0].data.shift();
+          }
+          charts[param].data.labels.push(time);
+          charts[param].data.datasets[0].data.push(data[param]);
+          charts[param].update();
+        });
+      });
+    }
+
+    $(document).ready(function() {
+      setInterval(fetchData, 1000);
+    });
+  </script>
+</body>
+</html>
